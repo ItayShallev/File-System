@@ -21,10 +21,24 @@ MyFs::MyFs(BlockDeviceSimulator *blkdevsim_) : blkdevsim(blkdevsim_), _fileCount
 		format();
 		std::cout << "Finished!" << std::endl;
 	}
-	else
+	else		// If file system instance already exists
 	{
-
+		// Fetching the file count
+		char fetchedFileCount[FILE_COUNT_SIZE];
+		this->blkdevsim->read(FILE_COUNT_ADDRESS, FILE_COUNT_SIZE, fetchedFileCount);
+		this->_fileCount = std::stoi(fetchedFileCount);
 	}
+}
+
+
+MyFs::~MyFs()
+{
+	// Writing the file count into the memory before exiting the program
+	std::string fileCount = std::to_string(this->_fileCount);
+	fileCount.append(FILE_COUNT_SIZE - fileCount.length(), '\0');
+
+	this->blkdevsim->write(FILE_COUNT_ADDRESS, FILE_COUNT_SIZE, (fileCount).c_str());
+	std::cout << CYAN << "\n\nSaved file count to memory (" << this->_fileCount << ")\n" << RESET << std::endl;
 }
 
 
@@ -55,17 +69,16 @@ void MyFs::format()
  */
 void MyFs::create_file(std::string path_str, bool directory)
 {
-	// Write an entry in the Table
-	std::cout << "Address in memory: " << TABLE_END_ADDRESS + this->_fileCount * FILE_SIZE << std::endl;
-
+	// Writing an entry in the Table
 	std::string stringEntry = path_str + "|" + std::to_string(TABLE_END_ADDRESS + this->_fileCount * FILE_SIZE) + "|0";
 	stringEntry.append(TABLE_ENTRY_SIZE - stringEntry.length(), '\0');
 	const char* entry = (stringEntry).c_str();
 
 	this->blkdevsim->write(TABLE_START_ADDRESS + (this->_fileCount * TABLE_ENTRY_SIZE), TABLE_ENTRY_SIZE, entry);
 
-	std::cout << "Entry: " << entry << std::endl;
-	std::cout << "Wrote entry to this address: " << TABLE_START_ADDRESS + (this->_fileCount * TABLE_ENTRY_SIZE) << std::endl;
+	std::cout << GREEN <<
+	"Entry: " << entry << "      -------> " << TABLE_START_ADDRESS + (this->_fileCount * TABLE_ENTRY_SIZE) <<
+	RESET << std::endl;
 
 	this->_fileCount++;
 }

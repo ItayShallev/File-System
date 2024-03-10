@@ -7,6 +7,9 @@
 #include "blkdev.h"
 #include "Helper.h"
 
+const int FILE_COUNT_ADDRESS = 5;
+const int FILE_COUNT_SIZE = 11;
+
 const int TABLE_START_ADDRESS = 16;
 const int TABLE_END_ADDRESS = 1024;
 const int TABLE_ENTRY_SIZE = 32;
@@ -18,6 +21,7 @@ class MyFs
 {
 public:
 	MyFs(BlockDeviceSimulator *blkdevsim_);
+	~MyFs();
 
 	/**
 	 * dir_list_entry struct

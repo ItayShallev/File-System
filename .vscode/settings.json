@@ -58,6 +58,7 @@
         "xutility": "cpp"
     },
     "cSpell.words": [
-        "blkdevsim"
+        "blkdevsim",
+        "myfs"
     ]
 }

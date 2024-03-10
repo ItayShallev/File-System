@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 	MyFs myfs(blkdevptr);
 	bool exit = false;
 
-	std::cout << "Welcome to " << FS_NAME << std::endl;
+	std::cout << GREEN << MENU_ASCII_ART << RESET << std::endl;
 	std::cout << "To get help, please type 'help' on the prompt below." << std::endl;
 	std::cout << std::endl;
 
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 		try
 		{
 			std::string cmdline;
-			std::cout << FS_NAME << "$ ";
+			std::cout << YELLOW << FS_NAME << "$ " << RESET;
 			std::getline(std::cin, cmdline, '\n');
 			if (cmdline == std::string(""))
 			{
