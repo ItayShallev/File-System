@@ -54,10 +54,6 @@ void MyFs::format()
 	strncpy(header.magic, MYFS_MAGIC, sizeof(header.magic));
 	header.version = CURR_VERSION;
 	blkdevsim->write(0, sizeof(header), (const char*)&header);
-
-	// // TODO: put your format code here
-	// const char* tableStr = "TABLE";
-	// blkdevsim->write(TABLE_ADDRESS, 6, tableStr);
 }
 
 
@@ -81,9 +77,9 @@ void MyFs::create_file(std::string path_str, bool directory)
 
 	this->blkdevsim->write(TABLE_START_ADDRESS + (this->_fileCount * TABLE_ENTRY_SIZE), TABLE_ENTRY_SIZE, entry);
 
-	std::cout << GREEN <<
-	"Entry: " << entry << "      -------> " << TABLE_START_ADDRESS + (this->_fileCount * TABLE_ENTRY_SIZE) <<
-	RESET << std::endl;
+	// std::cout << CYAN <<
+	// "Entry: " << entry << "      -------> " << TABLE_START_ADDRESS + (this->_fileCount * TABLE_ENTRY_SIZE) <<
+	// RESET << std::endl;
 
 	// Writing an initial message to the file
 	std::string message = "This file is named " + path_str;
@@ -149,7 +145,32 @@ void MyFs::set_content(std::string path_str, std::string content)
  */
 MyFs::dir_list MyFs::list_dir(std::string path_str)
 {
-	dir_list ans;
+	if (path_str == "/")		// current working directory
+	{
+		dir_list directoryList;
+
+		// Iterating over the files table searching for the given path_str
+		for (int i = TABLE_START_ADDRESS; i < this->_fileCount * TABLE_ENTRY_SIZE; i+=TABLE_ENTRY_SIZE)
+		{
+			char entry[TABLE_ENTRY_SIZE];
+			this->blkdevsim->read(i, TABLE_ENTRY_SIZE, entry);
+
+			std::vector<std::string> entryTokens = splitEntry(entry);		// Splitting the entry into its 3 sections
+
+			dir_list_entry dle;
+			dle.name = entryTokens.at(FILE_NAME_INDEX);
+			dle.is_dir = false;
+			dle.file_size = std::stoi(entryTokens.at(FILE_SIZE_INDEX));
+
+			directoryList.push_back(dle);
+		}
+
+		return directoryList;
+	}
+	else
+	{
+		// TODO: Add implementation for folders...
+	}
+
 	throw std::runtime_error("not implemented");
-	return ans;
 }

@@ -1,9 +1,22 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <sstream>
 #include <iomanip>
+
+const std::string FS_NAME 			= "myfs";
+
+// Commands
+const std::string LIST_CMD 			= "ls";
+const std::string CONTENT_CMD 		= "cat";
+const std::string CREATE_FILE_CMD 	= "touch";
+const std::string CREATE_DIR_CMD 	= "mkdir";
+const std::string EDIT_CMD 			= "edit";
+const std::string TREE_CMD 			= "tree";
+const std::string HELP_CMD 			= "help";
+const std::string EXIT_CMD 			= "exit";
 
 // Table Entries
 #define ENTRY_DELIMITER     '|'
@@ -43,3 +56,5 @@ const std::string MENU_ASCII_ART =
 std::string intToHex(int integer);
 
 std::vector<std::string> splitEntry(const std::string& entry);
+
+void printHelpMessage();
