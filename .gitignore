@@ -450,7 +450,9 @@ FodyWeavers.xsd
 
 # Own files
 test
+test.bak
 test2
+test2.bak
 bin/
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,c++,visualstudio
