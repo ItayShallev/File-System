@@ -5,6 +5,13 @@
 #include <vector>
 #include <stdint.h>
 #include "blkdev.h"
+#include "Helper.h"
+
+const int TABLE_START_ADDRESS = 16;
+const int TABLE_END_ADDRESS = 1024;
+const int TABLE_ENTRY_SIZE = 32;
+
+const int FILE_SIZE = 1024;
 
 
 class MyFs
@@ -56,6 +63,8 @@ private:
 
 	static const uint8_t CURR_VERSION = 0x03;
 	static const char *MYFS_MAGIC;
+
+	int _fileCount;
 };
 
 #endif // __MYFS_H__

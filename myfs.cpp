@@ -8,17 +8,22 @@
 const char *MyFs::MYFS_MAGIC = "MYFS";
 
 
-MyFs::MyFs(BlockDeviceSimulator *blkdevsim_) : blkdevsim(blkdevsim_)
+MyFs::MyFs(BlockDeviceSimulator *blkdevsim_) : blkdevsim(blkdevsim_), _fileCount(0)
 {
 	struct myfs_header header;
 	blkdevsim->read(0, sizeof(header), (char *)&header);
-
+	
+	// If didn't find file system instance
 	if ((strncmp(header.magic, MYFS_MAGIC, sizeof(header.magic)) != 0) || ((header.version != CURR_VERSION)))
 	{
 		std::cout << "Did not find myfs instance on blkdev" << std::endl;
 		std::cout << "Creating..." << std::endl;
 		format();
 		std::cout << "Finished!" << std::endl;
+	}
+	else
+	{
+
 	}
 }
 
@@ -36,7 +41,9 @@ void MyFs::format()
 	header.version = CURR_VERSION;
 	blkdevsim->write(0, sizeof(header), (const char*)&header);
 
-	// TODO: put your format code here
+	// // TODO: put your format code here
+	// const char* tableStr = "TABLE";
+	// blkdevsim->write(TABLE_ADDRESS, 6, tableStr);
 }
 
 
@@ -48,7 +55,19 @@ void MyFs::format()
  */
 void MyFs::create_file(std::string path_str, bool directory)
 {
-	throw std::runtime_error("not implemented");
+	// Write an entry in the Table
+	std::cout << "Address in memory: " << TABLE_END_ADDRESS + this->_fileCount * FILE_SIZE << std::endl;
+
+	std::string stringEntry = path_str + "|" + std::to_string(TABLE_END_ADDRESS + this->_fileCount * FILE_SIZE) + "|0";
+	stringEntry.append(TABLE_ENTRY_SIZE - stringEntry.length(), '\0');
+	const char* entry = (stringEntry).c_str();
+
+	this->blkdevsim->write(TABLE_START_ADDRESS + (this->_fileCount * TABLE_ENTRY_SIZE), TABLE_ENTRY_SIZE, entry);
+
+	std::cout << "Entry: " << entry << std::endl;
+	std::cout << "Wrote entry to this address: " << TABLE_START_ADDRESS + (this->_fileCount * TABLE_ENTRY_SIZE) << std::endl;
+
+	this->_fileCount++;
 }
 
 
