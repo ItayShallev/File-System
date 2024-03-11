@@ -8,7 +8,7 @@
 #include <iomanip>
 
 
-std::vector<std::string> split_cmd(std::string cmd)
+std::vector<std::string> split_cmd(const std::string& cmd)
 {
 	std::stringstream ss(cmd);
 	std::string part;
@@ -23,7 +23,7 @@ std::vector<std::string> split_cmd(std::string cmd)
 }
 
 
-static void recursive_print(MyFs &myfs, std::string path, std::string prefix="")
+static void recursive_print(MyFs& myfs, const std::string& path, const std::string& prefix="")
 {
 	MyFs::dir_list dlist = myfs.list_dir(path);
 
@@ -62,11 +62,11 @@ static void recursive_print(MyFs &myfs, std::string path, std::string prefix="")
 }
 
 
-int main(int argc, char **argv)
+int main(const int& argc, const char **argv)
 {
 	if (argc != 2)
 	{
-		std::cerr << "Please provide the file to operate on" << std::endl;
+		std::cerr << RED "Please provide the file to operate on" RESET << std::endl;
 		return -1;
 	}
 
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
 				}
 				else
 				{
-					std::cout << LIST_CMD << ": one or zero arguments requested" << std::endl;
+					std::cout << RED << LIST_CMD << ": one or zero arguments requested" RESET << std::endl;
 				}
 
 				for (size_t i=0; i < dlist.size(); i++)
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
 				}
 				else
 				{
-					std::cout << CREATE_FILE_CMD << ": file path requested" << std::endl;
+					std::cout << RED << CREATE_FILE_CMD << ": file path requested" RESET << std::endl;
 				}
 			}
 
@@ -150,7 +150,7 @@ int main(int argc, char **argv)
 				}
 				else
 				{
-					std::cout << CONTENT_CMD << ": file path requested" << std::endl;
+					std::cout << RED << CONTENT_CMD << ": file path requested" RESET << std::endl;
 				}
 			}
 
@@ -178,25 +178,25 @@ int main(int argc, char **argv)
 				}
 				else
 				{
-					std::cout << EDIT_CMD << ": file path requested" << std::endl;
+					std::cout << RED << EDIT_CMD << ": file path requested" RESET << std::endl;
 				}
 			}
 
-			else if (cmd[0] == CREATE_DIR_CMD)
-			{
-				if (cmd.size() == 2)
-				{
-					myfs.create_file(cmd[1], true);
-				}
-				else
-				{
-					std::cout << CREATE_DIR_CMD << ": one argument requested" << std::endl;
-				}
-			}
+			// else if (cmd[0] == CREATE_DIR_CMD)
+			// {
+			// 	if (cmd.size() == 2)
+			// 	{
+			// 		myfs.create_file(cmd[1], true);
+			// 	}
+			// 	else
+			// 	{
+			// 		std::cout << CREATE_DIR_CMD << ": one argument requested" << std::endl;
+			// 	}
+			// }
 
 			else
 			{
-				std::cout << "unknown command: " << cmd[0] << std::endl;
+				std::cout << RED "Unknown command: " << cmd[0] << RESET << std::endl;
 			}
 		}
 		

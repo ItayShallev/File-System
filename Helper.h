@@ -6,28 +6,18 @@
 #include <sstream>
 #include <iomanip>
 
-const std::string FS_NAME 			= "myfs";
-
-// Commands
-const std::string LIST_CMD 			= "ls";
-const std::string CONTENT_CMD 		= "cat";
-const std::string CREATE_FILE_CMD 	= "touch";
-const std::string CREATE_DIR_CMD 	= "mkdir";
-const std::string EDIT_CMD 			= "edit";
-const std::string TREE_CMD 			= "tree";
-const std::string HELP_CMD 			= "help";
-const std::string EXIT_CMD 			= "exit";
-
-// Table Entries
-#define ENTRY_DELIMITER     '|'
-#define FILE_NAME_INDEX     0
-#define FILE_ADDRESS_INDEX  1
-#define FILE_SIZE_INDEX     2
+const std::string FS_NAME = "myfs";
 
 #define MAX_FILE_NAME       20
 #define MAX_FILE_SIZE       1024
 
+// Table Entries
+#define ENTRY_DELIMITER     '|'
 #define ENTRY_NOT_FOUND     "-1"
+
+#define FILE_NAME_INDEX     0
+#define FILE_ADDRESS_INDEX  1
+#define FILE_SIZE_INDEX     2
 
 // Console colors
 #define RESET               "\033[0m"
@@ -38,11 +28,28 @@ const std::string EXIT_CMD 			= "exit";
 #define MAGENTA             "\033[35m"
 #define CYAN                "\033[36m"
 #define WHITE               "\033[37m"
-#define BOLDGREEN           "\033[1m\033[32m"
 #define BOLDYELLOW          "\033[1m\033[33m"
-#define BOLDBLUE            "\033[1m\033[34m"
-#define BOLDMAGENTA         "\033[1m\033[35m"
-#define BOLDCYAN            "\033[1m\033[36m" 
+
+#define COLUMN_SPACING      20
+
+// Commands
+const std::string LIST_CMD 			= "ls";
+const std::string CONTENT_CMD 		= "cat";
+const std::string CREATE_FILE_CMD 	= "touch";
+// const std::string CREATE_DIR_CMD 	= "mkdir";
+const std::string EDIT_CMD 			= "edit";
+const std::string TREE_CMD 			= "tree";
+const std::string HELP_CMD 			= "help";
+const std::string EXIT_CMD 			= "exit";
+
+const int FILE_COUNT_ADDRESS    = 5;
+const int FILE_COUNT_SIZE       = 11;
+const int FILE_SIZE             = 1024;
+
+const int TABLE_START_ADDRESS   = 16;
+const int TABLE_END_ADDRESS     = 1024;
+const int TABLE_ENTRY_SIZE      = 32;
+
 
 const std::string MENU_ASCII_ART = 
     "                   $$$$$$$$$\\$$\\ $$\\                  $$$$$$\\                        $$\\                             \n"
