@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <utility>
 #include <stdint.h>
 #include "blkdev.h"
 #include "Helper.h"
@@ -39,6 +40,13 @@ public:
 
 	void format();
 	
+	typedef std::pair<std::string, std::vector<std::string>> EntryInfo;
+	MyFs::EntryInfo getEntryInfo(const std::string& fileName);
+
+	void addTableEntry(const std::string& fileName, const int& fileAddress, const int& fileSize);
+	void editTableEntry(const std::string entryToEdit, const std::string& fileName, const int& fileAddress, const int& fileSize);
+	
+	bool isFileExists(const std::string& fileName);
 	void create_file(std::string path_str, bool directory);
 
 	std::string get_content(std::string path_str);

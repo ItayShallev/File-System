@@ -57,6 +57,68 @@ void MyFs::format()
 }
 
 
+MyFs::EntryInfo MyFs::getEntryInfo(const std::string& fileName)
+{
+	for (int i = TABLE_START_ADDRESS; i < this->_fileCount * TABLE_ENTRY_SIZE; i+=TABLE_ENTRY_SIZE)
+	{
+		char entry[TABLE_ENTRY_SIZE];
+		this->blkdevsim->read(i, TABLE_ENTRY_SIZE, entry);
+
+		std::vector<std::string> entryTokens = splitEntry(entry);		// Splitting the entry into its 3 sections
+		if (entryTokens.at(FILE_NAME_INDEX) == fileName)
+		{
+			return MyFs::EntryInfo(std::to_string(i), entryTokens);
+		}
+	}
+
+	return MyFs::EntryInfo(ENTRY_NOT_FOUND, std::vector<std::string>());		// Returning an empty pair
+}
+
+
+void MyFs::addTableEntry(const std::string& fileName, const int& fileAddress, const int& fileSize)
+{
+	std::string entry = fileName + "|" + std::to_string(fileAddress) + "|" + std::to_string(fileSize);
+	entry.append(TABLE_ENTRY_SIZE - entry.length(), '\0');
+
+	this->blkdevsim->write(TABLE_START_ADDRESS + (this->_fileCount * TABLE_ENTRY_SIZE), TABLE_ENTRY_SIZE, entry.c_str());
+}
+
+
+void MyFs::editTableEntry(const std::string entryToEdit, const std::string& fileName, const int& fileAddress, const int& fileSize)
+{
+	MyFs::EntryInfo entryInfo = this->getEntryInfo(entryToEdit);
+
+	// Checking if the entry was found
+	if (entryInfo.first == ENTRY_NOT_FOUND)
+	{
+		throw std::runtime_error(RED "File not found" RESET);
+	}
+
+	std::string updatedEntry = fileName + "|" + std::to_string(fileAddress) + "|" + std::to_string(fileSize);
+	updatedEntry.append(TABLE_ENTRY_SIZE - updatedEntry.length(), '\0');
+
+	this->blkdevsim->write(std::stoi(entryInfo.first), TABLE_ENTRY_SIZE, updatedEntry.c_str());
+}
+
+
+bool MyFs::isFileExists(const std::string& fileName)
+{
+	for (int i = TABLE_START_ADDRESS; i < this->_fileCount * TABLE_ENTRY_SIZE; i+=TABLE_ENTRY_SIZE)
+	{
+		char entry[TABLE_ENTRY_SIZE];
+		this->blkdevsim->read(i, TABLE_ENTRY_SIZE, entry);
+
+		std::vector<std::string> entryTokens = splitEntry(entry);		// Splitting the entry into its 3 sections
+		if (entryTokens.at(FILE_NAME_INDEX) == fileName)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+
 /**
  * create_file method
  * Creates a new file in the required path.
@@ -67,23 +129,14 @@ void MyFs::create_file(std::string path_str, bool directory)
 {
 	if (path_str.length() > MAX_FILE_NAME)		// Checking if the file name length is valid
 	{
-		throw std::runtime_error("File name too long");
+		throw std::runtime_error(RED "File name is too long" RESET);
+	}
+	else if (this->isFileExists(path_str))
+	{
+		throw std::runtime_error(RED "A file with this name already exists" RESET);
 	}
 
-	// Writing an entry in the Table
-	std::string stringEntry = path_str + "|" + std::to_string(TABLE_END_ADDRESS + this->_fileCount * FILE_SIZE) + "|0";
-	stringEntry.append(TABLE_ENTRY_SIZE - stringEntry.length(), '\0');
-	const char* entry = (stringEntry).c_str();
-
-	this->blkdevsim->write(TABLE_START_ADDRESS + (this->_fileCount * TABLE_ENTRY_SIZE), TABLE_ENTRY_SIZE, entry);
-
-	// std::cout << CYAN <<
-	// "Entry: " << entry << "      -------> " << TABLE_START_ADDRESS + (this->_fileCount * TABLE_ENTRY_SIZE) <<
-	// RESET << std::endl;
-
-	// Writing an initial message to the file
-	std::string message = "This file is named " + path_str;
-	this->blkdevsim->write(TABLE_END_ADDRESS + this->_fileCount * FILE_SIZE, message.length(), message.c_str());
+	this->addTableEntry(path_str, TABLE_END_ADDRESS + (this->_fileCount * FILE_SIZE), 0);
 
 	this->_fileCount++;
 }
@@ -99,24 +152,19 @@ void MyFs::create_file(std::string path_str, bool directory)
  */
 std::string MyFs::get_content(std::string path_str)
 {
-	// Iterating over the files table searching for the given path_str
-	for (int i = TABLE_START_ADDRESS; i < this->_fileCount * TABLE_ENTRY_SIZE; i+=TABLE_ENTRY_SIZE)
-	{
-		char entry[TABLE_ENTRY_SIZE];
-		this->blkdevsim->read(i, TABLE_ENTRY_SIZE, entry);
+	MyFs::EntryInfo entryInfo = this->getEntryInfo(path_str);
 
-		std::vector<std::string> entryTokens = splitEntry(entry);		// Splitting the entry into its 3 sections
-		if (entryTokens.at(FILE_NAME_INDEX) == path_str)
-		{
-			// Reading the file contents and saving into a variable
-			char fileContents[MAX_FILE_SIZE];
-			this->blkdevsim->read(std::stoi(entryTokens.at(FILE_ADDRESS_INDEX)), MAX_FILE_SIZE, fileContents);
-			
-			return fileContents;
-		}
+	// Checking if the entry was found
+	if (entryInfo.first == ENTRY_NOT_FOUND)
+	{
+		throw std::runtime_error(RED "File not found" RESET);
 	}
 
-	throw std::runtime_error("File not found");
+	// Reading the file contents and saving into a variable
+	char fileContents[MAX_FILE_SIZE];
+	this->blkdevsim->read(std::stoi(entryInfo.second.at(FILE_ADDRESS_INDEX)), MAX_FILE_SIZE, fileContents);
+	
+	return fileContents;
 }
 
 
@@ -130,7 +178,20 @@ std::string MyFs::get_content(std::string path_str)
  */
 void MyFs::set_content(std::string path_str, std::string content)
 {
-	throw std::runtime_error("not implemented");
+	// Iterating over the files table searching for the given path_str
+	MyFs::EntryInfo entryInfo = this->getEntryInfo(path_str);
+	int actualContentLength = content.length();
+	content = content.append(MAX_FILE_SIZE - content.length(), '\0');		// Padding the content with \0 to erase previous content
+
+	// Checking if the entry was found
+	if (entryInfo.first == ENTRY_NOT_FOUND)
+	{
+		this->create_file(path_str, false);
+		entryInfo = this->getEntryInfo(path_str);
+	}
+
+	this->editTableEntry(path_str, entryInfo.second.at(FILE_NAME_INDEX), std::stoi(entryInfo.second.at(FILE_ADDRESS_INDEX)), actualContentLength);
+	this->blkdevsim->write(std::stoi(entryInfo.second.at(FILE_ADDRESS_INDEX)), MAX_FILE_SIZE - 1, content.c_str());
 }
 
 
@@ -172,5 +233,5 @@ MyFs::dir_list MyFs::list_dir(std::string path_str)
 		// TODO: Add implementation for folders...
 	}
 
-	throw std::runtime_error("not implemented");
+	throw std::runtime_error(RED "not implemented" RESET);
 }

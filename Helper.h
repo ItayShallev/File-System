@@ -27,6 +27,8 @@ const std::string EXIT_CMD 			= "exit";
 #define MAX_FILE_NAME       20
 #define MAX_FILE_SIZE       1024
 
+#define ENTRY_NOT_FOUND     "-1"
+
 // Console colors
 #define RESET               "\033[0m"
 #define RED                 "\033[31m"
@@ -36,6 +38,11 @@ const std::string EXIT_CMD 			= "exit";
 #define MAGENTA             "\033[35m"
 #define CYAN                "\033[36m"
 #define WHITE               "\033[37m"
+#define BOLDGREEN           "\033[1m\033[32m"
+#define BOLDYELLOW          "\033[1m\033[33m"
+#define BOLDBLUE            "\033[1m\033[34m"
+#define BOLDMAGENTA         "\033[1m\033[35m"
+#define BOLDCYAN            "\033[1m\033[36m" 
 
 const std::string MENU_ASCII_ART = 
     "                   $$$$$$$$$\\$$\\ $$\\                  $$$$$$\\                        $$\\                             \n"
@@ -50,10 +57,6 @@ const std::string MENU_ASCII_ART =
     "                                                               \\$$$$$$  |                                            \n"
     "                                                                \\______/                                             \n";
 
-
-
-
-std::string intToHex(int integer);
 
 std::vector<std::string> splitEntry(const std::string& entry);
 

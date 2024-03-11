@@ -59,6 +59,8 @@
     },
     "cSpell.words": [
         "blkdevsim",
-        "myfs"
+        "blockdevice",
+        "myfs",
+        "newfile"
     ]
 }

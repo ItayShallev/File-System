@@ -113,10 +113,10 @@ int main(int argc, char **argv)
 
 				for (size_t i=0; i < dlist.size(); i++)
 				{
-					std::cout << std::setw(15) << std::left
+					std::cout << CYAN << std::setw(25) << std::left
 						<< dlist[i].name + (dlist[i].is_dir ? "/":"")
 						<< std::setw(10) << std::right
-						<< dlist[i].file_size << std::endl;
+						<< BOLDYELLOW << dlist[i].file_size << RESET << std::endl;
 				}
 			}
 
@@ -163,12 +163,13 @@ int main(int argc, char **argv)
 			{
 				if (cmd.size() == 2)
 				{
-					std::cout << "Enter new file content" << std::endl;
+					std::cout << CYAN "> " RESET;
 					std::string content;
 					std::string curr_line;
 					std::getline(std::cin, curr_line);
 					while (curr_line != "")
 					{
+						std::cout << CYAN "> " RESET;
 						content += curr_line + "\n";
 						std::getline(std::cin, curr_line);
 					}
