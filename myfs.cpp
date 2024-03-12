@@ -206,6 +206,12 @@ std::string MyFs::get_content(const std::string& path_str)
  */
 void MyFs::set_content(const std::string& path_str, std::string& content)
 {
+	// Checking if the content length is valid
+	if (content.length() > MAX_FILE_SIZE)
+	{
+		std::runtime_error(RED "Content too long" RESET);
+	}
+
 	// Iterating over the files table searching for the given path_str
 	MyFs::EntryInfo entryInfo = this->getEntryInfo(path_str);
 	int actualContentLength = content.length();

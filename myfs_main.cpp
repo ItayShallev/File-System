@@ -62,7 +62,7 @@ static void recursive_print(MyFs& myfs, const std::string& path, const std::stri
 }
 
 
-int main(const int& argc, const char **argv)
+int main(int argc, char **argv)
 {
 	if (argc != 2)
 	{
