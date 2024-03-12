@@ -1,6 +1,10 @@
-<h1 style="text-align:center;">File System</h1>
+# File System
 
-![Example GIF](fileSystem.gif)
+![Project Demonstration GIF](fileSystem.gif)
+
+
+## System Design
+![System Design Image](Diagram.png)
 
 
 ## Table of Contents
