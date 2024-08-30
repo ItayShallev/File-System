@@ -18,7 +18,7 @@
 To install this project, clone the repository to your local machine using the following command:
 
 ```console
-$ git clone https://gitlab.com/magshimim0/archi/file-system.git
+$ git clone https://github.com/ItayShallev/File-System.git
 ```
 
 
